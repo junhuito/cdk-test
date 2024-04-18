@@ -22,6 +22,6 @@ jobs:
             contents: read
         uses: ./.github/workflows/wc-deploy-to-env.yml
         with:
-            environment: ${{ steps.input-check.outputs.environment }}
+            environment: ${{ inputs.environment }}
             ref: ${{ inputs.ref }}
         secrets: inherit
