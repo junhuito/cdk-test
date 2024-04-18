@@ -1,0 +1,53 @@
+name: WC Deploy to Env
+on:
+    workflow_call:
+        inputs:
+            environment:
+                required: true
+                type: string
+            ref:
+                required: true
+                type: string
+        secrets:
+            AWS_ACCOUNT_ID:
+                required: true
+            AWS_SECRET_ACCESS_KEY:
+                required: true
+            AWS_ACCESS_KEY_ID:
+                required: true
+            
+
+jobs:
+    deploy-to-env:
+        runs-on: ubuntu-latest
+        environment:
+            name: ${{ inputs.environment }}
+        steps:
+            - name: Setup AWS Credentials
+              uses: aws-actions/configure-aws-credentials@master
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ vars.AWS_REGION }}
+
+            - name: Checkout Source Code
+              uses: actions/checkout@v3
+              with:
+                  persist-credentials: false
+                  ref: ${{ inputs.ref }}
+
+            - name: Update AWS CDK if available and deploy
+              shell: bash
+              env:
+                AWS_DEFAULT_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+                AWS_REGION: ${{ vars.AWS_REGION }}
+                NODE_ENV: ${{ vars.AWS_ENVIRONMENT }}
+              run: |
+                CDK_DEFAULT_ACCOUNT=$AWS_DEFAULT_ACCOUNT_ID
+                CDK_DEFAULT_REGION=$AWS_REGION
+                NODE_ENV=$NODE_ENV
+
+                yarn install
+                yarn cdk bootstrap aws://$AWS_DEFAULT_ACCOUNT_ID/$AWS_REGION
+                yarn cdk diff
+                yarn cdk deploy --require-approval=never

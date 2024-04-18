@@ -1,21 +1,50 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { DemoStack } from '../lib/demo-stack';
+import { MyLambdaStack } from '../lib/lambda-stack';
+import { MyS3BucketStack } from '../lib/bucket-stack';
+import { MySqsStack } from '../lib/sqs-stack';
+import { ParameterStoreStack } from '../lib/parameter-stack';
+import { SecretsManagerStack } from '../lib/secret-manager-stack';
+import { MyIAMStack } from '../lib/global-resources/iam-stack';
+import { MyEc2Stack } from '../lib/ec2-stack';
+import { DefaultStackSynthesizer } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 const app = new cdk.App();
-new DemoStack(app, 'DemoStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
 
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+// cdk bootstrap aws://361081796204/eu-central-1 -b jh-sandbox-eu-central-1
+// cdk bootstrap aws://361081796204/ap-southeast-1 -b jh-sandbox-ap-southeast-1
 
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
+const configs = [
+  {
+    env: {
+      region: 'ap-southeast-1',
+    },
+    synthesizer: new DefaultStackSynthesizer({
+      fileAssetsBucketName: 'jh-sandbox-ap-southeast-1',
+    }),
+  },
+  {
+    env: {
+      region: 'eu-central-1',
+    },
+    synthesizer: new DefaultStackSynthesizer({
+      fileAssetsBucketName: 'jh-sandbox-eu-central-1',
+    }),
+  },
+];
 
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-});
+// class RootStack extends cdk.Stack {
+//   constructor(scope: Construct, id: string) {
+//     super(scope, id);
+
+//     configs.forEach((config, index) => {
+//       new MyLambdaStack(this, `Junhui-LambdaStack-${config.env.region}`, config);
+//     })
+//   }
+// }
+
+new MyLambdaStack(app, `Junhui-LambdaStack-${configs[0].env.region}`, configs[0])
+
+// new RootStack(app, 'Junhui-RootStack')
