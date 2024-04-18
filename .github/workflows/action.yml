@@ -1,0 +1,67 @@
+name: Build Docker Image
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  Build-Docker-Image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR Public
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+
+      - name: Create .env file
+        run: |
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          cp .env src/
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./src
+          push: true
+          tags: public.ecr.aws/l6l3i2k4/pacer-test:latest
+          registry: public.ecr.aws/l6l3i2k4
+        env:
+          ECR_REGISTRY: public.ecr.aws/l6l3i2k4
+
+  Deploy-to-EC2:
+    needs: Build-Docker-Image
+    runs-on: ubuntu-latest
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      HOSTNAME: 52.74.129.55
+      USER_NAME: ec2-user
+    steps:
+      - name: Connect to EC2 instance
+        run: |
+          touch private_key.pem
+          echo "$SSH_PRIVATE_KEY" > private_key.pem && chmod 400 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
+            docker pull public.ecr.aws/l6l3i2k4/pacer-test:latest
+            docker kill $(docker ps -q)
+            docker run --rm -d -p 8000:8000/tcp public.ecr.aws/l6l3i2k4/pacer-test:latest
+            docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
+          '
