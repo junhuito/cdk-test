@@ -7,9 +7,9 @@ on:
             environment:
                 required: true
                 type: string
-            ref:
-                required: true
-                type: string
+            # ref:
+            #     required: true
+            #     type: string
         secrets:
             AWS_ACCOUNT_ID:
                 required: true
