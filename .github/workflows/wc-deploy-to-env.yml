@@ -1,20 +1,23 @@
 name: WC Deploy to Env
 on:
-    workflow_call:
-        inputs:
-            environment:
-                required: true
-                type: string
-            ref:
-                required: true
-                type: string
-        secrets:
-            AWS_ACCOUNT_ID:
-                required: true
-            AWS_SECRET_ACCESS_KEY:
-                required: true
-            AWS_ACCESS_KEY_ID:
-                required: true
+    push:
+        branches: [master]
+    # workflow_call:
+    #     inputs:
+    #         environment:
+    #             required: true
+    #             type: string
+    #         ref:
+    #             required: true
+    #             type: string
+    #     secrets:
+    #         AWS_ACCOUNT_ID:
+    #             required: true
+    #         AWS_SECRET_ACCESS_KEY:
+    #             required: true
+    #         AWS_ACCESS_KEY_ID:
+    #             required: true
+    workflow_dispatch:
             
 
 jobs:
@@ -22,6 +25,12 @@ jobs:
         runs-on: ubuntu-latest
         environment:
             name: ${{ inputs.environment }}
+        strategy:
+            fail-fast: false
+            matrix:
+                env:
+                    - sandbox-sg
+                    - sandbox-de
         steps:
             - name: Setup AWS Credentials
               uses: aws-actions/configure-aws-credentials@master
@@ -50,4 +59,4 @@ jobs:
                 yarn install
                 yarn cdk bootstrap aws://$AWS_DEFAULT_ACCOUNT_ID/$AWS_REGION
                 yarn cdk diff
-                yarn cdk deploy --require-approval=never
+                yarn cdk deploy --all --require-approval=never

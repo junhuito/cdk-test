@@ -2,7 +2,7 @@ import { StackProps, Stack } from 'aws-cdk-lib';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
-export class ParameterStoreStack extends Stack {
+export class GlobalStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 

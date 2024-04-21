@@ -1,0 +1,53 @@
+name: 1Release Talent Management Report Fn
+on:
+    push:
+        branches: [master]
+    workflow_dispatch:
+
+jobs:
+    semantic-release:
+        if: github.ref == 'refs/heads/master'
+        runs-on: ubuntu-latest
+        outputs:
+            released_version: ${{ steps.release.outputs.RELEASED_VERSION }}
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  ref: master
+                  persist-credentials: false
+
+            - name: Semantic release
+              id: release
+              uses: Pulsifi/github-template/semantic-release@master
+              with:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  APP_ADMIN_GITHUB_PAT: ${{ secrets.APP_ADMIN_GITHUB_PAT }}
+                  SLACK_BOT_RELEASE_WEBHOOK: ${{ secrets.SLACK_BOT_RELEASE_WEBHOOK }}
+
+    deploy-to-staging:
+        needs: [semantic-release]
+        permissions:
+            id-token: write
+            contents: read
+        uses: ./.github/workflows/wc-deploy-to-env.yml
+        with:
+            environment: staging
+            ref: v${{ needs.semantic-release.outputs.released_version }}
+        secrets: inherit
+
+    deploy-to-production:
+        needs: [semantic-release, deploy-to-staging]
+        strategy:
+            fail-fast: false
+            matrix:
+                env:
+                    - production-sg
+                    - production-de
+        permissions:
+            id-token: write
+            contents: read
+        uses: ./.github/workflows/wc-deploy-to-env.yml
+        with:
+            environment: ${{ matrix.env }}
+            ref: v${{ needs.semantic-release.outputs.released_version }}
+        secrets: inherit

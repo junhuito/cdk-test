@@ -1,14 +1,12 @@
-import { CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { CfnOutput, Duration, NestedStack, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { CfnVersion, Code, LayerVersion, Runtime, Version } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { ZipLayer } from 'cdk-lambda-layer-zip';
 import { Construct } from 'constructs';
 import { serverlessConfiguration } from './serverless';
+import * as packages from './resources/layer/nodejs/package.json';
 
 import type { AWS } from '@serverless/typescript';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
-import { ParameterStoreStack } from './parameter-stack';
 // type AWSResource = Required<AWS['resources']>;
 
 interface SQSResource {
@@ -39,8 +37,9 @@ class CreateSqsResource extends Construct {
   }
 }
 
-export class MyLambdaStack extends Stack {
+export class MainStack extends Stack {
   public readonly fn: NodejsFunction;
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -64,19 +63,28 @@ export class MyLambdaStack extends Stack {
     //   code: Code.fromAsset('./node_modules'),
     // })
 
+    // const layer = new LayerVersion(this, 'my-testing-lambda-layer', {
+    //   code: Code.fromAsset('./lib/resources/layer'),
+    //   compatibleRuntimes: [Runtime.NODEJS_16_X],
+    //   removalPolicy: RemovalPolicy.RETAIN,
+    // })
+
     this.fn = new NodejsFunction(this, 'junhui-testVersionedLambda-junhui-testVersionedLambda-junhui-testVersionedLambda-junhui-testVersionedLambda', {
       bundling: {
-        externalModules: ['aws-sdk'],
-        // nodeModules: 
+        nodeModules: [],
+        externalModules: Object.keys(packages.dependencies),
         minify: true,
+        bundleAwsSDK: false,
       },
+      handler: 'abc',
       depsLockFilePath: './yarn.lock',
       runtime: Runtime.NODEJS_16_X,
       functionName: 'junhui-testVersionedLambda',
       entry: 'lambda/hello/index.ts',
       currentVersionOptions: {
         removalPolicy: RemovalPolicy.RETAIN,
-      }
+      },
+      // layers: [layer]
     });
     // this.fn.invalidateVersionBasedOn(Date.now().toString());
 
