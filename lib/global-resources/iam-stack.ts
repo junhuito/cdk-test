@@ -17,15 +17,15 @@ export class GlobalStack extends Stack {
         resources: ['*']
     });
 
-    const managedPolicy = new ManagedPolicy(this, 'MyPolicy', {
-        managedPolicyName: `MyCustomPolicy${process.env.CDK_DEFAULT_REGION}`,
+    const managedPolicy = new ManagedPolicy(this, `MyPolicy${process.env.CDK_DEFAULT_REGION}`, {
+        managedPolicyName: `MyCustomPolicy`,
         statements: [
             policy,
         ],
     })
 
     // Create an IAM role
-    const createdRole = new Role(this, 'MyRole', {
+    const createdRole = new Role(this, `MyRole${process.env.CDK_DEFAULT_REGION}`, {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'), // trust entities
       roleName: `MyLambdaRole`, // Optional: Specify a custom role name
       managedPolicies: [
