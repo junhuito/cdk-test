@@ -36,12 +36,17 @@ const app = new cdk.App();
 //   },
 // ];
 
-new GlobalStack(app, 'Junhui-GlobalStack', {
-    env: {
-        region: process.env.CDK_DEFAULT_REGION,
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-    }
-});
+try {
+    new GlobalStack(app, 'Junhui-GlobalStack', {
+        env: {
+            region: process.env.CDK_DEFAULT_REGION,
+            account: process.env.CDK_DEFAULT_ACCOUNT,
+        }
+    });
+} catch(e) {
+    console.log('SKIP:', e)
+}
+
 new MainStack(app, `Junhui-LambdaStack`, {
     env: {
         region: process.env.CDK_DEFAULT_REGION,
