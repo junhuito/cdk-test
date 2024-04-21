@@ -21,8 +21,8 @@ on:
 jobs:
     deploy-to-env:
         runs-on: ubuntu-latest
-        # environment:
-        #     name: ${{ inputs.environment }}
+        environment:
+            name: ${{ inputs.environment }}
         steps:
             - name: Setup AWS Credentials
               uses: aws-actions/configure-aws-credentials@master
