@@ -54,8 +54,7 @@ jobs:
                 yarn cdk deploy --all --require-approval=never
         
             - name: Clean up lambda version
-              uses: junhuito/cdk-test/action.yml@master
-              with:
-                  FUNCTION_NAME: junhui-testVersionedLambda
-                  VERSION_TO_KEEP: 3
-            
+              run: |
+                FUNCTION_NAME=junhui-testVersionedLambda
+                VERSION_TO_KEEP=1
+                node clean-lambda.js

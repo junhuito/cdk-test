@@ -89,8 +89,15 @@ async function deleteVersion(
 
 async function run(): Promise<void> {
   try {
-    const functionName = core.getInput('FUNCTION_NAME');
-    const numberToKeep = parseInt(core.getInput('NUMBER_TO_KEEP'));
+    // const functionName = core.getInput('FUNCTION_NAME');
+    // const numberToKeep = parseInt(core.getInput('NUMBER_TO_KEEP'));
+    const functionName = process.env.FUNCTION_NAME;
+    const numberToKeep = Number(process.env.VERSION_TO_KEEP);
+
+    if (!functionName) {
+      throw new Error('FUNCTION_NAME must be provided');
+    }
+
     if (isNaN(numberToKeep)) {
       throw new Error('NUMBER_TO_KEEP must be a number');
     }
