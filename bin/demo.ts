@@ -36,18 +36,14 @@ const app = new cdk.App();
 //   },
 // ];
 
-try {
-    new GlobalStack(app, 'Junhui-GlobalStack', {
-        env: {
-            region: process.env.CDK_DEFAULT_REGION,
-            account: process.env.CDK_DEFAULT_ACCOUNT,
-        }
-    });
-} catch(e) {
-    console.log('SKIP:', e)
-}
+new GlobalStack(app, 'Junhui-GlobalStack', {
+    env: {
+        region: 'ap-southeast-1',
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+    }
+});
 
-new MainStack(app, `Junhui-LambdaStack`, {
+const mainStack = new MainStack(app, `Junhui-MainStack`, {
     env: {
         region: process.env.CDK_DEFAULT_REGION,
         account: process.env.CDK_DEFAULT_ACCOUNT,
@@ -60,7 +56,7 @@ new MainStack(app, `Junhui-LambdaStack`, {
 
 // const stack = new MyLambdaStack(app, `Junhui-LambdaStack-test`);
 
-// new LambdaLayerVersionCleaner(stack, 'LambdaLayerVersionCleaner', {
-//   retainVersions: 3,
-//   layerCleanerSchedule: Schedule.rate(cdk.Duration.minutes(1)),
-// });
+new LambdaLayerVersionCleaner(mainStack, 'LambdaLayerVersionCleaner', {
+  retainVersions: 3,
+  layerCleanerSchedule: Schedule.rate(cdk.Duration.minutes(1)),
+});

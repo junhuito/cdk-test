@@ -93,7 +93,7 @@ export class MainStack extends Stack {
     //   removalPolicy: RemovalPolicy.RETAIN,
     // })
 
-    // this.fn.currentVersion;
+    this.fn.currentVersion;
 
 
     

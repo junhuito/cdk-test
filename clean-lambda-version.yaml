@@ -1,0 +1,13 @@
+name: 'Clean Up'
+description: 'Clean up lambda version'
+inputs:
+  FUNCTION_NAME:
+    description: 'Function name to clean up'
+    required: true
+  NUMBER_TO_KEEP:
+    description: 'Number of version to keep'
+    required: true
+    default: 3
+runs:
+  using: 'node20'
+  main: './clean-lambda.js'

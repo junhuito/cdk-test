@@ -52,3 +52,10 @@ jobs:
                 yarn cdk bootstrap aws://$AWS_DEFAULT_ACCOUNT_ID/$AWS_REGION
                 yarn cdk diff
                 yarn cdk deploy --all --require-approval=never
+        
+            - name: Clean up lambda version
+              uses: ../../clean-lambda-version
+              with:
+                  FUNCTION_NAME: junhui-testVersionedLambda
+                  VERSION_TO_KEEP: 3
+            
