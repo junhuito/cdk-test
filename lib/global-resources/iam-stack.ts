@@ -2,9 +2,9 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { Role, ServicePrincipal, ManagedPolicy, Policy, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 
-export class GlobalStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
-    super(scope, id, props);
+export class GlobalStack extends Construct {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
 
     const policy = new PolicyStatement({
         effect: Effect.ALLOW,

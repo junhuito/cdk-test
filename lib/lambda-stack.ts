@@ -7,6 +7,8 @@ import * as packages from './resources/layer/nodejs/package.json';
 
 import type { AWS } from '@serverless/typescript';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { GlobalStack } from './global-resources/iam-stack';
+import { Role } from 'aws-cdk-lib/aws-iam';
 // type AWSResource = Required<AWS['resources']>;
 
 interface SQSResource {
@@ -43,6 +45,10 @@ export class MainStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    if (this.region === 'ap-southeast-1') {
+      new GlobalStack(this, 'iam');
+    }
+
     // const SQSResourceType = 'AWS::SQS::Queue';
 
     // Object.entries(serverlessConfiguration.resources?.Resources ?? {}).forEach(([resource, configuration]) => {
@@ -69,17 +75,20 @@ export class MainStack extends Stack {
     //   removalPolicy: RemovalPolicy.RETAIN,
     // })
 
-    this.fn = new NodejsFunction(this, 'junhui-testVersionedLambda-junhui-testVersionedLambda-junhui-testVersionedLambda-junhui-testVersionedLambda', {
+    const requiredRole = Role.fromRoleArn(this, 'roleArn', 'arn:aws:iam::361081796204:role/MyLambdaRole');
+
+    this.fn = new NodejsFunction(this, 'test-testVersionedLambda', {
       bundling: {
         nodeModules: [],
         externalModules: Object.keys(packages.dependencies),
         minify: true,
         bundleAwsSDK: false,
       },
+      role: requiredRole,
       handler: 'abc',
       depsLockFilePath: './yarn.lock',
       runtime: Runtime.NODEJS_16_X,
-      functionName: 'junhui-testVersionedLambda',
+      functionName: 'test-testVersionedLambda',
       entry: 'lambda/hello/index.ts',
       currentVersionOptions: {
         removalPolicy: RemovalPolicy.RETAIN,
@@ -88,7 +97,7 @@ export class MainStack extends Stack {
     });
     // this.fn.invalidateVersionBasedOn(Date.now().toString());
 
-    // new Version(this, 'junhui-testVersionedLambda-version', {
+    // new Version(this, 'test-testVersionedLambda-version', {
     //   lambda: this.fn,
     //   removalPolicy: RemovalPolicy.RETAIN,
     // })
@@ -97,7 +106,7 @@ export class MainStack extends Stack {
 
 
     
-    // new CfnVersion(this, 'junhui-testVersionedLambda-version', {
+    // new CfnVersion(this, 'test-testVersionedLambda-version', {
     //   functionName: this.fn.functionName,
     //   description: 'description',
     // })

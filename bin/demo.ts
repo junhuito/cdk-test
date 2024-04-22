@@ -36,27 +36,27 @@ const app = new cdk.App();
 //   },
 // ];
 
-new GlobalStack(app, 'Junhui-GlobalStack', {
-    env: {
-        region: 'ap-southeast-1',
-        account: process.env.CDK_DEFAULT_ACCOUNT,
-    }
-});
+// new GlobalStack(app, 'Test-GlobalStack', {
+//     env: {
+//         region: 'ap-southeast-1',
+//         account: process.env.CDK_DEFAULT_ACCOUNT,
+//     }
+// });
 
-const mainStack = new MainStack(app, `Junhui-MainStack`, {
+new MainStack(app, `Test-MainStack`, {
     env: {
         region: process.env.CDK_DEFAULT_REGION,
         account: process.env.CDK_DEFAULT_ACCOUNT,
     }
 });
 
-// // new MyLambdaStack(app, `Junhui-LambdaStack-${configs[0].env.region}`, configs[0]);
+// // new MyLambdaStack(app, `Test-LambdaStack-${configs[0].env.region}`, configs[0]);
 
-// new RootStack(app, 'Junhui-RootStack')
+// new RootStack(app, 'Test-RootStack')
 
-// const stack = new MyLambdaStack(app, `Junhui-LambdaStack-test`);
+// const stack = new MyLambdaStack(app, `Test-LambdaStack-test`);
 
-new LambdaLayerVersionCleaner(mainStack, 'LambdaLayerVersionCleaner', {
-  retainVersions: 3,
-  layerCleanerSchedule: Schedule.rate(cdk.Duration.minutes(1)),
-});
+// new LambdaLayerVersionCleaner(mainStack, 'LambdaLayerVersionCleaner', {
+//   retainVersions: 3,
+//   layerCleanerSchedule: Schedule.rate(cdk.Duration.minutes(1)),
+// });
