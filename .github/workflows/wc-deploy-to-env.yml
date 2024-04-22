@@ -53,8 +53,10 @@ jobs:
                 yarn cdk diff
                 yarn cdk deploy --all --require-approval=never
         
-            # - name: Clean up lambda version
-            #   run: |
-            #     FUNCTION_NAME=junhui-testVersionedLambda
-            #     VERSION_TO_KEEP=1
-            #     node clean-lambda.js
+            - name: Clean up lambda version
+              env:
+                FUNCTION_NAME: 'junhui-testVersionedLambda'
+                VERSION_TO_KEEP: '2'
+              run: |
+                node clean-lambda.js
+              
