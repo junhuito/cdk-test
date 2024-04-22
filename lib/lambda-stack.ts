@@ -45,8 +45,9 @@ export class MainStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    let iam;
     if (this.region === 'ap-southeast-1') {
-      new GlobalStack(this, 'iam');
+      iam = new GlobalStack(this, 'iam');
     }
 
     // const SQSResourceType = 'AWS::SQS::Queue';
@@ -95,6 +96,8 @@ export class MainStack extends Stack {
       },
       // layers: [layer]
     });
+
+
     // this.fn.invalidateVersionBasedOn(Date.now().toString());
 
     // new Version(this, 'test-testVersionedLambda-version', {
@@ -104,8 +107,10 @@ export class MainStack extends Stack {
 
     this.fn.currentVersion;
 
+    if (iam) {
+      this.fn.node.addDependency(iam);
+    }
 
-    
     // new CfnVersion(this, 'test-testVersionedLambda-version', {
     //   functionName: this.fn.functionName,
     //   description: 'description',
