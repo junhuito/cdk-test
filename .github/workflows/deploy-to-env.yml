@@ -23,5 +23,5 @@ jobs:
         uses: ./.github/workflows/wc-deploy-to-env.yml
         with:
             environment: ${{ inputs.environment }}
-            ref: ${{ inputs.ref }}
+            # ref: ${{ inputs.ref }}
         secrets: inherit
