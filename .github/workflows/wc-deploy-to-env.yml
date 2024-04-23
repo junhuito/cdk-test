@@ -55,7 +55,7 @@ jobs:
         
             - name: Clean up lambda version
               env:
-                FUNCTION_NAME: 'junhui-testVersionedLambda'
+                FUNCTION_NAME: 'test-testVersionedLambda'
                 VERSION_TO_KEEP: '2'
               run: |
                 node clean-lambda.js

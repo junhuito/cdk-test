@@ -9,6 +9,9 @@ import type { AWS } from '@serverless/typescript';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { GlobalStack } from './global-resources/iam-stack';
 import { Role } from 'aws-cdk-lib/aws-iam';
+import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
+import { S3EventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
 // type AWSResource = Required<AWS['resources']>;
 
 interface SQSResource {
@@ -110,6 +113,24 @@ export class MainStack extends Stack {
       // layers: [layer]
     });
 
+    const bucket = Bucket.fromBucketArn(this, 'test-bucket', 'arn:aws:s3:::tm-new-bucket');
+
+    // bucket.addEventNotification(
+    //   EventType.OBJECT_CREATED,
+    //   new s3n
+    // )
+    // bucket.addEventNotification(
+    //   EventType.OBJECT_CREATED,
+    //   new LambdaDestination(this.fn),
+    //   {
+    //     prefix: 'test/*'
+    //   }
+    // )
+    // this.fn.addEventSource(
+    //   new S3EventSource(bucket, {
+
+    //   })
+    // )
 
     // this.fn.invalidateVersionBasedOn(Date.now().toString());
 
