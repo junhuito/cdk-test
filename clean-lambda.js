@@ -106,6 +106,7 @@ function listAllVersions(functionName) {
                     return [4 /*yield*/, listVersions(functionName, marker)];
                 case 2:
                     result = _a.sent();
+                    console.log('listAllVersion result...', result);
                     if (!result.NextMarker) {
                         hasMoreVersions = false;
                     }
@@ -157,16 +158,21 @@ function run() {
                     if (isNaN(numberToKeep)) {
                         throw new Error('NUMBER_TO_KEEP must be a number');
                     }
+                    console.log('functionName...', functionName_1);
+                    console.log('numberToKeep...', numberToKeep);
                     return [4 /*yield*/, getAliasedVersions(functionName_1)];
                 case 1:
                     aliasedVersions_1 = _a.sent();
+                    console.log('aliasedVersions...', aliasedVersions_1);
                     return [4 /*yield*/, listAllVersions(functionName_1)];
                 case 2:
                     allVersions = _a.sent();
+                    console.log('allVersions...', allVersions);
                     removableVersions = allVersions.filter(function (v) {
                         return !aliasedVersions_1.includes(v) && v !== '$LATEST';
                     });
                     versionsToRemove = removableVersions.slice(0, removableVersions.length - numberToKeep);
+                    console.log('versionsToRemove...', versionsToRemove);
                     core.info("preparing to remove ".concat(versionsToRemove.length, " version(s)"));
                     deleteVersions = versionsToRemove.map(function (v) {
                         return deleteVersion(functionName_1, v);

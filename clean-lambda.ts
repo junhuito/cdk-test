@@ -53,6 +53,7 @@ async function listAllVersions(functionName: string): Promise<string[]> {
       functionName,
       marker,
     );
+    console.log('listAllVersion result...', result);
     if (!result.NextMarker) {
       hasMoreVersions = false;
     } else {
@@ -101,8 +102,12 @@ async function run(): Promise<void> {
     if (isNaN(numberToKeep)) {
       throw new Error('NUMBER_TO_KEEP must be a number');
     }
+    console.log('functionName...', functionName);
+    console.log('numberToKeep...', numberToKeep);
     const aliasedVersions = await getAliasedVersions(functionName);
+    console.log('aliasedVersions...', aliasedVersions);
     const allVersions = await listAllVersions(functionName);
+    console.log('allVersions...', allVersions);
 
     const removableVersions = allVersions.filter(v => {
       return !aliasedVersions.includes(v) && v !== '$LATEST';
@@ -112,6 +117,7 @@ async function run(): Promise<void> {
       removableVersions.length - numberToKeep,
     );
 
+    console.log('versionsToRemove...', versionsToRemove);
     core.info(`preparing to remove ${versionsToRemove.length} version(s)`);
 
     const deleteVersions = versionsToRemove.map(v =>

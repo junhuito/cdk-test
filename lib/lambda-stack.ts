@@ -1,5 +1,5 @@
 import { CfnOutput, Duration, NestedStack, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { CfnVersion, Code, LayerVersion, Runtime, Version } from 'aws-cdk-lib/aws-lambda';
+import { CfnVersion, Code, LayerVersion, ParamsAndSecretsLayerVersion, Runtime, Version } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { serverlessConfiguration } from './serverless';
@@ -80,11 +80,24 @@ export class MainStack extends Stack {
 
     this.fn = new NodejsFunction(this, 'test-testVersionedLambda', {
       bundling: {
-        nodeModules: [],
         externalModules: Object.keys(packages.dependencies),
         minify: true,
         bundleAwsSDK: false,
-      },
+        commandHooks: {
+          beforeBundling: (inputDir: string, outputDir: string) => {
+            console.log('inputDir...', inputDir);
+            console.log('outputDir...', outputDir);
+
+            return [];
+            // return [
+            //   `cp ${inputDir}/lambda/hello/myExtra.file ${outputDir}`, // copy file action
+            //   `cp -r ${inputDir}/lambda/hello/myExtraFolder ${outputDir}` // copy folder action
+            // ];
+          },
+          afterBundling: (inputDir: string, outputDir: string) => [],
+          beforeInstall: (inputDir: string, outputDir: string) => [],
+        }
+      },      
       role: requiredRole,
       handler: 'abc',
       depsLockFilePath: './yarn.lock',
