@@ -24,7 +24,7 @@ jobs:
             name: ${{ inputs.environment }}
         steps:
             - name: Setup AWS Credentials
-              uses: junhuito/prune-lambda-version@v0.0.3
+              uses: junhuito/prune-lambda-version@v0.0.4
               with:
                   RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
                   STACK_NAME: ${{ inputs.STACK_NAME }}
