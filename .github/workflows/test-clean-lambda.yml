@@ -1,4 +1,4 @@
-name: Deploy to Env
+name: Test clean lambda
 on:
     workflow_dispatch:
         inputs:
