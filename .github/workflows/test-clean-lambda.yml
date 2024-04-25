@@ -20,6 +20,8 @@ on:
 jobs:
     clean-lambda-test:
         runs-on: ubuntu-latest
+        environment:
+            name: ${{ inputs.environment }}
         steps:
             - name: Setup AWS Credentials
               uses: junhuito/prune-lambda-version@v0.0.3
