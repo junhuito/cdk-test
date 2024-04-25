@@ -15,6 +15,7 @@ on:
                 required: true
                 description: Number of versions to retain
                 type: string
+                default: "3"
 
 jobs:
     clean-lambda-test:
