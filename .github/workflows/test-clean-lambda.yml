@@ -7,9 +7,13 @@ on:
                 description: Environment to deploy
                 default: sandbox
                 type: environment
-            stack-name:
+            STACK_NAME:
                 required: true
                 description: Stack Name
+                type: string
+            RETAIN_FUNCTION_VERSION:
+                required: true
+                description: Number of versions to retain
                 type: string
 
 jobs:
@@ -17,9 +21,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Setup AWS Credentials
-              uses: junhuito/prune-lambda-version@v0.02
+              uses: junhuito/prune-lambda-version@v0.0.3
               with:
-                  STACK_NAME: ${{ inputs.stack-name }}
+                  RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
+                  STACK_NAME: ${{ inputs.STACK_NAME }}
                   ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   REGION: ${{ vars.AWS_REGION }}
