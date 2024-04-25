@@ -1,0 +1,26 @@
+name: Deploy to Env
+on:
+    workflow_dispatch:
+        inputs:
+            environment:
+                required: true
+                description: Environment to deploy
+                default: sandbox
+                type: environment
+            stack-name:
+                required: true
+                description: Stack Name
+                type: string
+
+jobs:
+    clean-lambda-test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Setup AWS Credentials
+              uses: junhuito/prune-lambda-version@v0.02
+              with:
+                  STACK_NAME: ${{ inputs.stack-name }}
+                  ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  REGION: ${{ vars.AWS_REGION }}
+
