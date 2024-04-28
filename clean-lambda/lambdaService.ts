@@ -105,8 +105,6 @@ async function deleteLambdaVersions(functionName: string, versions: string[]) {
     await Promise.all(promises)
   }
 
-  
-
   core.info(`Deleted ${functionName} versions: ${JSON.stringify(versions)}`);
 }
 

@@ -1,11 +1,9 @@
 import {
   LambdaClient,
-  GetLayerVersionByArnCommand,
   ListLayerVersionsCommand,
   DeleteLayerVersionCommand
 } from '@aws-sdk/client-lambda'
 import * as core from '@actions/core'
-import { getAllStackResources } from './cloudformationService'
 import { StackResourceSummary } from '@aws-sdk/client-cloudformation'
 import { ResourceType } from './constants'
 import { chunk, getLayerInfoByArn, isValidResourceStatus, onlyUnique } from './utils'
