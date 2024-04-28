@@ -1,7 +1,7 @@
 import { CfnOutput, Duration, NestedStack, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { CfnVersion, Code, LayerVersion, ParamsAndSecretsLayerVersion, Runtime, Version } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { serverlessConfiguration } from './serverless';
 import * as packages from './resources/layer/nodejs/package.json';
 
@@ -12,7 +12,15 @@ import { Role } from 'aws-cdk-lib/aws-iam';
 import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
 import { S3EventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
-// type AWSResource = Required<AWS['resources']>;
+import { CfnUserPool, UserPool } from 'aws-cdk-lib/aws-cognito';
+import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
+import { BaseCustomState } from './customStateConstruct';
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions'
+import { IAMRoleConstruct } from './jwConstruct';
+import { SecretsManagerStack } from './secret-manager-stack';
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
+import { BaseLayer, getLayer } from './baseLayer';
 
 interface SQSResource {
   [k: string]: {
@@ -38,6 +46,57 @@ class CreateSqsResource extends Construct {
         queueName: QueueName,
         visibilityTimeout: VisibilityTimeout ? Duration.seconds(VisibilityTimeout) : undefined,
       })
+    })
+  }
+}
+
+const findNodeByLogicalId = (node: Node, logicalId: string): Node => {
+  if (node.id === logicalId) {
+    return node;
+  }
+
+  for (const child of node.children) {
+    const result = findNodeByLogicalId(child.node, logicalId);
+    if (result) {
+      return result;
+    }
+  }
+
+  throw new Error('Not found');
+
+}
+
+
+class StepFunctionConstruct extends Construct {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id);
+
+    const stateah = new BaseCustomState(this, 'test-machine',{
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:ap-southeast-1:361081796204:function:firstStep:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+    });
+
+    new sfn.StateMachine(this, 'test-step-function', {
+      stateMachineName: 'test-step-function-name',
+      definitionBody: new sfn.ChainDefinitionBody(stateah)
     })
   }
 }
@@ -73,12 +132,14 @@ export class MainStack extends Stack {
     //   code: Code.fromAsset('./node_modules'),
     // })
 
-    // const layer = new LayerVersion(this, 'my-testing-lambda-layer', {
-    //   code: Code.fromAsset('./lib/resources/layer'),
-    //   compatibleRuntimes: [Runtime.NODEJS_16_X],
-    //   removalPolicy: RemovalPolicy.RETAIN,
-    // })
+    new BaseLayer(this, 'my-testing-lambda-layer', {
+      code: Code.fromAsset('./lib/resources/layer'),
+      layerVersionName: 'my-testing-lambda-layer-name',
+      compatibleRuntimes: [Runtime.NODEJS_16_X],
+      removalPolicy: RemovalPolicy.RETAIN,
+    })
 
+    const layer = getLayer('my-testing-lambda-layer');
     const requiredRole = Role.fromRoleArn(this, 'roleArn', 'arn:aws:iam::361081796204:role/MyLambdaRole');
 
     this.fn = new NodejsFunction(this, 'test-testVersionedLambda', {
@@ -110,26 +171,45 @@ export class MainStack extends Stack {
       currentVersionOptions: {
         removalPolicy: RemovalPolicy.RETAIN,
       },
-      // layers: [layer]
+      layers: [layer],
     });
 
-    const bucket = Bucket.fromBucketArn(this, 'test-bucket', 'arn:aws:s3:::tm-new-bucket');
+    const r = new Rule(this, 'test-testVersionedLambda-rule', {
+      schedule: Schedule.expression('cron(0 * * * ? *)'),
+    })
+    r.addTarget(new LambdaFunction(this.fn));
 
-    // bucket.addEventNotification(
-    //   EventType.OBJECT_CREATED,
-    //   new s3n
-    // )
+
+    // console.log('this.node...', this.node.findChild('test-testVersionedLambda-logical-id'));
+    
+
+    // const usrPool = UserPool.fromUserPoolArn(this, 'usrpoolid', 'arn');
+
+    // new AwsCustomResource(this, 'updateUsrPool', {
+    //   resourceType: 'Custom::UpdateUserPool',
+    //   onCreate: {
+    //     region: this.region,
+    //     service: 'CognitoIdentityServiceProvider',
+    //     action: 'updateUserPool',
+    //     parameters: {
+    //       UserPoolId: usrPool.userPoolId,
+          
+    //     }
+    //   }
+    // })
+
+    // console.log('this.node...', this.node.children);
+    // usrPool
+    
+    // new IAMRoleConstruct(this, 'iam-role')
+    // const bucket = Bucket.fromBucketArn(this, 'test-bucket', 'arn:aws:s3:::test-bucket-event-notification-1');
+
     // bucket.addEventNotification(
     //   EventType.OBJECT_CREATED,
     //   new LambdaDestination(this.fn),
     //   {
     //     prefix: 'test/*'
     //   }
-    // )
-    // this.fn.addEventSource(
-    //   new S3EventSource(bucket, {
-
-    //   })
     // )
 
     // this.fn.invalidateVersionBasedOn(Date.now().toString());

@@ -1,0 +1,31 @@
+name: 'Prune lambda version'
+description: 'Prune lambda workflow by cloudformation stack name'
+author: 'Jun'
+
+branding:
+  icon: 'heart'
+  color: 'red'
+
+inputs:
+  RETAIN_FUNCTION_VERSION:
+    description: 'Number of lambda function version to retain'
+    required: false
+  RETAIN_LAYER_VERSION:
+    description: 'Number of lambda layer version to retain'
+    required: false
+  REGION:
+    description: 'Your aws region'
+    required: true
+  ACCESS_KEY_ID:
+    description: 'Your aws access key id'
+    required: true
+  SECRET_ACCESS_KEY:
+    description: 'Your aws secret access key'
+    required: true
+  STACK_NAME:
+    description: 'Your cloudformation stack name'
+    required: true
+
+runs:
+  using: node20
+  main: dist/index.js

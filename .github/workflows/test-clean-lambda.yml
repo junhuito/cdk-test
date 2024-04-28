@@ -12,23 +12,57 @@ on:
                 description: Stack Name
                 type: string
             RETAIN_FUNCTION_VERSION:
-                required: true
+                required: false
+                description: Number of versions to retain
+                type: string
+                default: "3"
+            RETAIN_LAYER_VERSION:
+                required: false
                 description: Number of versions to retain
                 type: string
                 default: "3"
 
 jobs:
-    clean-lambda-test:
-        runs-on: ubuntu-latest
-        environment:
-            name: ${{ inputs.environment }}
-        steps:
-            - name: Setup AWS Credentials
-              uses: junhuito/prune-lambda-version@v0.0.4
-              with:
-                  RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
-                  STACK_NAME: ${{ inputs.STACK_NAME }}
-                  ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  REGION: ${{ vars.AWS_REGION }}
+    # clean-lambda-test:
+    #     runs-on: ubuntu-latest
+    #     environment:
+    #         name: ${{ inputs.environment }}
+    #     steps:
+    #         - name: Cleaning aws lambda
+    #           uses: junhuito/prune-lambda-version@v0.0.4
+    #           with:
+    #               RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
+    #               STACK_NAME: ${{ inputs.STACK_NAME }}
+    #               ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #               SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #               REGION: ${{ vars.AWS_REGION }}
 
+            
+    test-action:
+        name: GitHub Actions Test
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout
+            id: checkout
+            uses: actions/checkout@v4
+
+          - name: Setup Node.js
+            uses: actions/setup-node@v3
+            with:
+              node-version: 20
+
+          - name: Install package
+            run: |
+              npm install
+
+          - name: Test clean lambda
+            id: test-clean-lambda
+            uses: ./
+            with:
+              RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
+              RETAIN_LAYER_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
+              STACK_NAME: ${{ inputs.STACK_NAME }}
+              ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              REGION: ${{ vars.AWS_REGION }}
