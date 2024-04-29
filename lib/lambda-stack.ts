@@ -174,10 +174,10 @@ export class MainStack extends Stack {
       layers: [layer],
     });
 
-    const r = new Rule(this, 'test-testVersionedLambda-rule', {
-      schedule: Schedule.expression('cron(0 * * * ? *)'),
-    })
-    r.addTarget(new LambdaFunction(this.fn));
+    // const r = new Rule(this, 'test-testVersionedLambda-rule', {
+    //   schedule: Schedule.expression('cron(0 * * * ? *)'),
+    // })
+    // r.addTarget(new LambdaFunction(this.fn));
 
 
     // console.log('this.node...', this.node.findChild('test-testVersionedLambda-logical-id'));
