@@ -42,6 +42,11 @@ jobs:
           cdk-notifier --version
           
       - name: Check diff to main
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPO: $(echo ${{ github.repository }} | cut -d'/' -f2)
+          PULL_REQUEST_ID: ${{ github.event.pull_request.number }}
         run: |
           echo "check the diff to main"
           BRANCH_NAME=master npx cdk diff --progress=events &> >(tee cdk.log)
@@ -50,12 +55,12 @@ jobs:
           echo "GITHUB_OWNER: $GITHUB_OWNER"
           echo "GITHUB_REPO: $GITHUB_REPO"
           cdk-notifier \
-          --owner  ${{ github.repository_owner }} \
-          --repo ${{ github.repository }} \
+          --owner  ${{ env.GITHUB_OWNER }} \
+          --repo ${{ env.GITHUB_REPO }} \
           --token ${{ secrets.GITHUB_TOKEN }} \
           --log-file ./cdk.log \
           --tag-id diff-to-main \
-          --pull-request-id ${{ github.event.pull_request.number }} \
+          --pull-request-id ${{ env.PULL_REQUEST_ID }} \
           --vcs github \
           --ci circleci \
           --template extendedWithResources
