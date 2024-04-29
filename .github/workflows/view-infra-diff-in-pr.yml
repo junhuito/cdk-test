@@ -4,8 +4,16 @@ on:
 #   pull_request_target:
 #     types: ['ready_for_review', 'synchronize']
 #     branches: ['master']
-    push:
-        branches: ['master']
+    # push:
+    #     branches: ['master']
+
+    workflow_dispatch:
+        inputs:
+            environment:
+                required: true
+                description: Environment to deploy
+                default: sandbox
+                type: environment
 
 permissions:
     id-token: write
