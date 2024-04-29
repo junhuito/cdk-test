@@ -54,10 +54,12 @@ jobs:
         uses: mshick/add-pr-comment@v2
         with:
           message-id: cdk-diff
-          message: |
-            <details>
-                <summary>CDK Diff</summary>
-                ```bash
-                ${{ steps.output_log.outputs.data }}
-                ```
-            </details>
+          message-path: |
+            output.log
+        #   message: |
+        #     <details>
+        #         <summary>CDK Diff</summary>
+        #         ```bash
+        #         ${{ steps.output_log.outputs.data }}
+        #         ```
+        #     </details>
