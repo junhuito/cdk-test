@@ -8,23 +8,15 @@ on:
     #     branches: ['master']
 
     workflow_dispatch:
-        inputs:
-            environment:
-                required: true
-                description: Environment to deploy
-                default: sandbox
-                type: environment
 
 permissions:
     id-token: write
-    contents: read
-    pull-requests: write
 
 jobs:
   build:
     name: Run CDK diff
     environment:
-        name: sandbox
+        name: sandbox-sg
     runs-on: ubuntu-latest
     
     steps:
