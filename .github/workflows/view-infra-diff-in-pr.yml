@@ -2,7 +2,7 @@ name: Run CDK difference
 
 on:
   pull_request_target:
-    types: ['ready_for_review']
+    types: ['ready_for_review', 'synchronize', 'opened']
     branches: ['master']
 
 jobs:
