@@ -1,9 +1,11 @@
 name: Run CDK difference
 
 on:
-  pull_request_target:
-    types: ['ready_for_review', 'synchronize']
-    branches: ['master']
+#   pull_request_target:
+#     types: ['ready_for_review', 'synchronize']
+#     branches: ['master']
+    push:
+        branches: ['master']
 
 permissions:
     id-token: write
