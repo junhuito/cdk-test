@@ -58,9 +58,8 @@ jobs:
             <details>
                 <summary>CDK Diff</summary>
                 ` ` `bash
-                $(cat output.log)
+                ${{ steps.output_log.outputs.data }}
                 ` ` `
             </details>
 
 
-            
