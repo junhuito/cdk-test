@@ -3,8 +3,6 @@ name: Run CDK difference
 on:
   pull_request:
     branches: ['master']
-  push:
-    branches: ['master']
 
 jobs:
   build:
@@ -23,7 +21,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - name: Install pnpm
+      - name: Install node
         uses: actions/setup-node@v3
         with:
           node-version: 20
