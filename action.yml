@@ -35,12 +35,18 @@ runs:
   steps:
     - name: Package Installation
       run: |
-        cd ./clean-lambda && yarn install && npx ts-node ./index.ts
+        RETAIN_FUNCTION_VERSION="${{ inputs.RETAIN_FUNCTION_VERSION }}"
+        RETAIN_LAYER_VERSION="${{ inputs.RETAIN_LAYER_VERSION }}"
+        REGION="${{ inputs.REGION }}"
+        ACCESS_KEY_ID="${{ inputs.ACCESS_KEY_ID }}"
+        SECRET_ACCESS_KEY="${{ inputs.SECRET_ACCESS_KEY }}"
+        STACK_NAME="${{ inputs.STACK_NAME }}"
+        cd ./clean-lambda && \
+        RETAIN_FUNCTION_VERSION="${RETAIN_FUNCTION_VERSION}" \
+        RETAIN_LAYER_VERSION="${RETAIN_LAYER_VERSION}" \
+        REGION="${REGION}" \
+        ACCESS_KEY_ID="${ACCESS_KEY_ID}" \
+        SECRET_ACCESS_KEY="${SECRET_ACCESS_KEY}" \
+        STACK_NAME="${STACK_NAME}" \
+        yarn install && npx ts-node ./index.ts
       shell: bash
-      with:
-        RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
-        RETAIN_LAYER_VERSION: ${{ inputs.RETAIN_LAYER_VERSION }}
-        REGION: ${{ inputs.REGION }}
-        ACCESS_KEY_ID: ${{ inputs.ACCESS_KEY_ID }}
-        SECRET_ACCESS_KEY: ${{ inputs.SECRET_ACCESS_KEY }}
-        STACK_NAME: ${{ inputs.STACK_NAME }}
