@@ -57,9 +57,9 @@ jobs:
           message: |
             <details>
                 <summary>CDK Diff</summary>
-                ` ` `bash
+                ```bash
                 ${{ steps.output_log.outputs.data }}
-                ` ` `
+                ```
             </details>
 
 
