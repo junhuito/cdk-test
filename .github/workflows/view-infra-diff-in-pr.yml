@@ -2,8 +2,13 @@ name: Run CDK difference
 
 on:
   pull_request_target:
-    types: ['ready_for_review', 'synchronize', 'opened']
+    types: ['ready_for_review', 'synchronize']
     branches: ['master']
+
+permissions:
+    id-token: write
+    contents: read
+    pull-requests: write
 
 jobs:
   build:
@@ -11,11 +16,7 @@ jobs:
     environment:
         name: sandbox
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-      pull-requests: write
-
+    
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
