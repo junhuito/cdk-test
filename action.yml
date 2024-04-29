@@ -26,6 +26,17 @@ inputs:
     description: 'Your cloudformation stack name'
     required: true
 
+# runs:
+#   using: node20
+#   main: dist/index.js
+
 runs:
-  using: node20
-  main: dist/index.js
+  using: composite
+  steps:
+    - id: Bundle clean lambda
+      run: npx tsc --project ./clean-lambda/tsconfig.json
+      shell: bash
+
+    - name: Execute dist/index.js
+      run: dist/index.js
+      shell: bash
