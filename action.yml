@@ -33,7 +33,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - id: Bundle clean lambda
+    - name: Bundle clean lambda
       run: npx tsc --project ./clean-lambda/tsconfig.json
       shell: bash
 
