@@ -33,6 +33,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Bundle clean lambda
-      run: npx ts-node ./clean-lambda
+    - name: Package Installation
+      run: cd ./clean-lambda && yarn install
+      shell: bash
+
+    - name: Run clean lambda
+      run: npx ts-node ./
       shell: bash
