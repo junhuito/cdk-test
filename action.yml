@@ -37,7 +37,7 @@ runs:
       run: |
         cd ./clean-lambda && yarn install && npx ts-node ./index.ts
       shell: bash
-      env:
+      with:
         RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
         RETAIN_LAYER_VERSION: ${{ inputs.RETAIN_LAYER_VERSION }}
         REGION: ${{ inputs.REGION }}
