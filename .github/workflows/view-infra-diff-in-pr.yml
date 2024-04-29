@@ -7,7 +7,8 @@ on:
 jobs:
   build:
     name: Run CDK diff
-    environment: sandbox
+    environment:
+        name: sandbox
     runs-on: ubuntu-latest
     permissions:
       id-token: write
