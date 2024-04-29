@@ -34,11 +34,5 @@ runs:
   using: composite
   steps:
     - name: Bundle clean lambda
-      run: npx tsc --project ./clean-lambda/tsconfig.json
-      shell: bash
-
-    - name: Execute dist/index.js
-      run: |
-        chmod +x dist/index.js
-        dist/index.js
+      run: npx ts-node ./clean-lambda
       shell: bash
