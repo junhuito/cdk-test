@@ -34,9 +34,5 @@ runs:
   using: composite
   steps:
     - name: Package Installation
-      run: cd ./clean-lambda && yarn install
-      shell: bash
-
-    - name: Run clean lambda
-      run: npx ts-node ./index.ts
+      run: cd ./clean-lambda && yarn install && npx ts-node ./index.ts
       shell: bash
