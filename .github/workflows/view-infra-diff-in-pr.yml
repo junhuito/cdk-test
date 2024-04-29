@@ -43,7 +43,6 @@ jobs:
           
       - name: Check diff to main
         run: |
-          npm ci
           echo "check the diff to main"
           BRANCH_NAME=master npx cdk diff --progress=events &> >(tee cdk.log)
           echo "create cdk-notifier report"
