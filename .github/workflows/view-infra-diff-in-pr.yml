@@ -40,6 +40,7 @@ jobs:
           gunzip cdk-notifier.gz && chmod +x cdk-notifier && rm -rf cdk-notifier.gz
           sudo mv cdk-notifier /usr/local/bin/cdk-notifier
           cdk-notifier --version
+          
       - name: Check diff to main
         run: |
           npm ci
