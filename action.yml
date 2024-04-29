@@ -38,5 +38,7 @@ runs:
       shell: bash
 
     - name: Execute dist/index.js
-      run: dist/index.js
+      run: |
+        chmod +x dist/index.js
+        dist/index.js
       shell: bash
