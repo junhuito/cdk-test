@@ -38,5 +38,5 @@ runs:
       shell: bash
 
     - name: Run clean lambda
-      run: npx ts-node ./
+      run: npx ts-node ./index.ts
       shell: bash
