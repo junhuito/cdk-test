@@ -58,7 +58,6 @@ jobs:
             run: |
               yarn add typescript -g
               yarn install --cwd ./clean-lambda
-              tsc --project ./clean-lambda
 
           - name: Test clean lambda
             # id: test-clean-lambda
@@ -86,5 +85,5 @@ jobs:
               ACCESS_KEY_ID="${ACCESS_KEY_ID}" \
               SECRET_ACCESS_KEY="${SECRET_ACCESS_KEY}" \
               STACK_NAME="${STACK_NAME}" \
-              node ./index.ts
+              npx ts-node ./index.ts
             shell: bash
