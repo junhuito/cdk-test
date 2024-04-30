@@ -37,7 +37,7 @@ runs:
       run: |
         RETAIN_FUNCTION_VERSION="${{ inputs.RETAIN_FUNCTION_VERSION }}"
         RETAIN_LAYER_VERSION="${{ inputs.RETAIN_LAYER_VERSION }}"
-        REGION="${{ inputs.REGION }}"
+        REGION="${{ vars.AWS_REGION }}"
         ACCESS_KEY_ID="${{ inputs.ACCESS_KEY_ID }}"
         SECRET_ACCESS_KEY="${{ inputs.SECRET_ACCESS_KEY }}"
         STACK_NAME="${{ inputs.STACK_NAME }}"
