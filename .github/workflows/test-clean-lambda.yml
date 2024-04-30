@@ -56,8 +56,9 @@ jobs:
 
           - name: Install package
             run: |
+              yarn add typescript -g
               yarn install --cwd ./clean-lambda
-              npx tsc --project ./clean-lambda
+              tsc --project ./clean-lambda
 
           - name: Test clean lambda
             id: test-clean-lambda
