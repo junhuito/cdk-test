@@ -42,3 +42,11 @@ export const chunk = <T>(arr: T[], size: number): T[][] =>
   Array.from({ length: Math.ceil(arr.length / size) }, (_: any, i: number) =>
     arr.slice(i * size, i * size + size)
 );
+
+export const requireEnv = (name: string) => {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`An error occurred: The required environment variable (${name}) is not set.`)
+  }
+  return value;
+}

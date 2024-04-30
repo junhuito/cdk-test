@@ -3,13 +3,13 @@ import {
   ListStackResourcesCommand,
   StackResourceSummary
 } from '@aws-sdk/client-cloudformation'
-import * as core from '@actions/core'
+import { requireEnv } from 'utils'
 
 const clientConfig = {
-  region: core.getInput('REGION'),
+  region: requireEnv('REGION'),
   credentials: {
-    accessKeyId: core.getInput('ACCESS_KEY_ID'),
-    secretAccessKey: core.getInput('SECRET_ACCESS_KEY')
+    accessKeyId: requireEnv('ACCESS_KEY_ID'),
+    secretAccessKey: requireEnv('SECRET_ACCESS_KEY')
   }
 }
 

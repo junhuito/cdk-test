@@ -1,6 +1,6 @@
 import { StackResourceSummary } from '@aws-sdk/client-cloudformation'
 import * as core from '@actions/core'
-import { chunk, isValidResourceStatus, onlyUnique } from './utils'
+import { chunk, isValidResourceStatus, onlyUnique, requireEnv } from './utils'
 import { ResourceType } from './constants'
 import {
   DeleteFunctionCommand,
@@ -10,10 +10,10 @@ import {
 } from '@aws-sdk/client-lambda'
 
 const clientConfig = {
-  region: core.getInput('REGION'),
+  region: requireEnv('REGION'),
   credentials: {
-    accessKeyId: core.getInput('ACCESS_KEY_ID'),
-    secretAccessKey: core.getInput('SECRET_ACCESS_KEY')
+    accessKeyId: requireEnv('ACCESS_KEY_ID'),
+    secretAccessKey: requireEnv('SECRET_ACCESS_KEY'),
   }
 }
 

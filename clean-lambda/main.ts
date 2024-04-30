@@ -2,16 +2,17 @@ import * as core from '@actions/core'
 import { getAllStackResources } from './cloudformationService'
 import { handlePruneLambdaVersion } from './lambdaService';
 import { handlePruneLayerVersion } from './layerService';
+import { requireEnv } from 'utils';
 
 export async function run(): Promise<void> {
   try {
-    const stackName: string = core.getInput('STACK_NAME', { required: true })
+    const stackName: string = requireEnv('STACK_NAME')
     const functionVersionToRetain: number = Number(
-      core.getInput('RETAIN_FUNCTION_VERSION')
+      process.env.RETAIN_FUNCTION_VERSION
     )
 
     const layerVersionToRetain: number = Number(
-      core.getInput('RETAIN_LAYER_VERSION')
+      process.env.RETAIN_LAYER_VERSION
     )
 
     core.info(`Retrieving stack resources...`);
