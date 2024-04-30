@@ -54,14 +54,7 @@ jobs:
             with:
               node-version: 20
 
-          - name: Install package
-            run: |
-              yarn add typescript -g
-              yarn install --cwd ./clean-lambda
-
           - name: Test clean lambda
-            # id: test-clean-lambda
-            # uses: ./clean-lambda
             env:
               RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
               RETAIN_LAYER_VERSION: ${{ inputs.RETAIN_LAYER_VERSION }}
@@ -70,6 +63,7 @@ jobs:
               SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               REGION: ${{ vars.AWS_REGION }}
             run: |
-              cd ./clean-lambda && \
+              cd ./clean-lambda
+              yarn install
               npx ts-node ./index.ts
             shell: bash
