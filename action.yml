@@ -26,18 +26,17 @@ inputs:
     description: 'Your cloudformation stack name'
     required: true
 
-# runs:
-#   using: node20
-#   main: dist/index.js
-
 runs:
+  using: node20
+  main: dist/index.js
+
   using: composite
   steps:
     - name: Package Installation
       run: |
         RETAIN_FUNCTION_VERSION="${{ inputs.RETAIN_FUNCTION_VERSION }}"
         RETAIN_LAYER_VERSION="${{ inputs.RETAIN_LAYER_VERSION }}"
-        REGION="${{ vars.AWS_REGION }}"
+        REGION="${{ inputs.REGION }}"
         ACCESS_KEY_ID="${{ inputs.ACCESS_KEY_ID }}"
         SECRET_ACCESS_KEY="${{ inputs.SECRET_ACCESS_KEY }}"
         STACK_NAME="${{ inputs.STACK_NAME }}"

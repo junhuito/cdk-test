@@ -54,9 +54,10 @@ jobs:
             with:
               node-version: 20
 
-          # - name: Install package
-          #   run: |
-          #     npm install
+          - name: Install package
+            run: |
+              yarn install --cwd ./clean-lambda
+              npx tsc --project ./clean-lambda
 
           - name: Test clean lambda
             id: test-clean-lambda
