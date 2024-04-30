@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import { getAllStackResources } from './cloudformationService'
 import { handlePruneLambdaVersion } from './lambdaService';
 import { handlePruneLayerVersion } from './layerService';
-import { requireEnv } from 'utils';
+import { requireEnv } from './utils';
 
 export async function run(): Promise<void> {
   try {

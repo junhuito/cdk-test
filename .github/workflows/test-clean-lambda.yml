@@ -74,9 +74,9 @@ jobs:
             run: |
               RETAIN_FUNCTION_VERSION="${{ inputs.RETAIN_FUNCTION_VERSION }}"
               RETAIN_LAYER_VERSION="${{ inputs.RETAIN_LAYER_VERSION }}"
-              REGION="${{ inputs.REGION }}"
-              ACCESS_KEY_ID="${{ inputs.ACCESS_KEY_ID }}"
-              SECRET_ACCESS_KEY="${{ inputs.SECRET_ACCESS_KEY }}"
+              REGION="${{ vars.REGION }}"
+              ACCESS_KEY_ID="${{ secrets.ACCESS_KEY_ID }}"
+              SECRET_ACCESS_KEY="${{ secrets.SECRET_ACCESS_KEY }}"
               STACK_NAME="${{ inputs.STACK_NAME }}"
               cd ./clean-lambda && \
               RETAIN_FUNCTION_VERSION="${RETAIN_FUNCTION_VERSION}" \

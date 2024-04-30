@@ -3,7 +3,7 @@ import {
   ListStackResourcesCommand,
   StackResourceSummary
 } from '@aws-sdk/client-cloudformation'
-import { requireEnv } from 'utils'
+import { requireEnv } from './utils'
 
 const clientConfig = {
   region: requireEnv('REGION'),
