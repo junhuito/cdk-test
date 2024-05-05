@@ -18,7 +18,7 @@ import { BaseCustomState } from './customStateConstruct';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions'
 import { IAMRoleConstruct } from './jwConstruct';
 import { SecretsManagerStack } from './secret-manager-stack';
-import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import { EventBus, Rule, RuleTargetInput, Schedule } from 'aws-cdk-lib/aws-events';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { BaseLayer, getLayer } from './baseLayer';
 
@@ -172,6 +172,16 @@ export class MainStack extends Stack {
         removalPolicy: RemovalPolicy.RETAIN,
       },
       layers: [layer],
+    });
+
+    const rr = new Rule(this, 'myRule', {
+      ruleName: 'trigger-warm-up',
+      schedule: Schedule.rate(Duration.minutes(1)),
+      targets: [new LambdaFunction(this.fn, {
+        event: RuleTargetInput.fromObject({
+          source: 'walwallalalala',
+        })
+      })],
     });
 
     // const r = new Rule(this, 'test-testVersionedLambda-rule', {

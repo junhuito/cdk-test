@@ -6,13 +6,14 @@ import { requireEnv } from './utils';
 
 export async function run(): Promise<void> {
   try {
-    const stackName: string = requireEnv('STACK_NAME')
+    // const stackName: string = requireEnv('STACK_NAME')
+    const stackName: string = 'Test-MainStack';
     const functionVersionToRetain: number = Number(
-      process.env.RETAIN_FUNCTION_VERSION
+      1
     )
 
     const layerVersionToRetain: number = Number(
-      process.env.RETAIN_LAYER_VERSION
+      1
     )
 
     core.info(`Retrieving stack resources...`);

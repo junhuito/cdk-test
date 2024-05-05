@@ -1,22 +1,23 @@
 import {
   LambdaClient,
   ListLayerVersionsCommand,
-  DeleteLayerVersionCommand
+  DeleteLayerVersionCommand,
+  GetFunctionCommand
 } from '@aws-sdk/client-lambda'
 import * as core from '@actions/core'
 import { StackResourceSummary } from '@aws-sdk/client-cloudformation'
 import { ResourceType } from './constants'
 import { chunk, getLayerInfoByArn, isValidResourceStatus, onlyUnique, requireEnv } from './utils'
 
-const clientConfig = {
-  region: requireEnv('REGION'),
-  credentials: {
-    accessKeyId: requireEnv('ACCESS_KEY_ID'),
-    secretAccessKey: requireEnv('SECRET_ACCESS_KEY')
-  }
-}
+// const clientConfig = {
+//   region: requireEnv('REGION'),
+//   credentials: {
+//     accessKeyId: requireEnv('ACCESS_KEY_ID'),
+//     secretAccessKey: requireEnv('SECRET_ACCESS_KEY')
+//   }
+// }
 
-const lambdaClient = new LambdaClient(clientConfig)
+const lambdaClient = new LambdaClient()
 
 async function getLayerVersions(layerName: string): Promise<number[]> {
   let firstCalled = false
@@ -65,16 +66,49 @@ async function deleteLayerVersions(layerName: string, versions: number[]) {
     }
 
     core.info(`Deleted ${layerName} versions: ${JSON.stringify(versions)}`);
-}  
+}
 
-async function pruneLayerVersion(layerName: string, retainVersion = 3) {
+// raining, i go close window
+async function isFunctionUsingLayer() {
+
+}
+
+async function pruneLayerVersion(layerName: string, invalidLayerVersionToDelete: number[], retainVersion = 3) {
   const layerVersions = await getLayerVersions(layerName);
   
   const versionToDelete = [...layerVersions]
+    .filter((x) => !invalidLayerVersionToDelete.includes(x))
     .sort((a, b) => b - a)
     .slice(retainVersion)
 
-  await deleteLayerVersions(layerName, versionToDelete)
+  console.log('versionToDelete...', versionToDelete);
+
+  // await deleteLayerVersions(layerName, versionToDelete)
+}
+
+async function getLayerVersionUsedByLambda(functionNames: string[]) {
+  const invalidLayerVersionToDelete: Record<string, number[]> = {};
+
+  for (const functionName of functionNames) {
+    const command = new GetFunctionCommand({
+      FunctionName: functionName,
+    })
+  
+    const response = await lambdaClient.send(command)
+  
+    response.Configuration?.Layers?.forEach(layer => {
+      if (layer.Arn) {
+        const { layerName, version } = getLayerInfoByArn(layer.Arn);
+        if (layerName in invalidLayerVersionToDelete) {
+          invalidLayerVersionToDelete[layerName].push(Number(version))
+        } else {
+          invalidLayerVersionToDelete[layerName] = [Number(version)]
+        }
+      }
+    })
+  }
+  
+  return invalidLayerVersionToDelete;
 }
 
 export async function handlePruneLayerVersion(
@@ -87,6 +121,23 @@ export async function handlePruneLayerVersion(
       isValidResourceStatus(resource.ResourceStatus)
   )
 
+  const functionResources = stackResources.filter(
+    resource =>
+      resource.ResourceType === ResourceType.FUNCTION &&
+      isValidResourceStatus(resource.ResourceStatus)
+  )
+
+  const functionNames: string[] = [];
+
+  functionResources.forEach(functionResource => {
+    if (functionResource.LogicalResourceId) {
+      functionNames.push(functionResource.LogicalResourceId);
+    }
+  })
+
+  const invalidLayerVersionToDelete = await getLayerVersionUsedByLambda(functionNames);
+
+  console.log('invalidLayerVersionToDelete...', invalidLayerVersionToDelete);
   const layersName: string[] = []
   layersResources.forEach(layer => {
     if (layer.PhysicalResourceId) {
@@ -100,7 +151,8 @@ export async function handlePruneLayerVersion(
   const uniqueLayersName = layersName.filter(onlyUnique);
 
   const promises = uniqueLayersName.map(async layerName => {
-    await pruneLayerVersion(layerName, retainVersion)
+    const invalidVersions = invalidLayerVersionToDelete[layerName] ?? [];
+    await pruneLayerVersion(layerName, invalidVersions, retainVersion)
   });
 
   await Promise.allSettled(promises);
