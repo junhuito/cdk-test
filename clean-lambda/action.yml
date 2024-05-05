@@ -30,9 +30,9 @@ runs:
   using: composite
   steps:
     - name: Package Installation
-      run: cd ./clean-lambda && yarn install
+      run: yarn install --cwd ./clean-lambda
       shell: bash
 
     - name: Run clean lambda
-      run: npx ts-node ./
+      run: npx ts-node ./clean-lambda
       shell: bash
