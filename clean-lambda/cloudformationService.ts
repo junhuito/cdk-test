@@ -5,15 +5,15 @@ import {
 } from '@aws-sdk/client-cloudformation'
 import { requireEnv } from './utils'
 
-// const clientConfig = {
-//   region: requireEnv('REGION'),
-//   credentials: {
-//     accessKeyId: requireEnv('ACCESS_KEY_ID'),
-//     secretAccessKey: requireEnv('SECRET_ACCESS_KEY')
-//   }
-// }
+const clientConfig = {
+  region: requireEnv('REGION'),
+  credentials: {
+    accessKeyId: requireEnv('ACCESS_KEY_ID'),
+    secretAccessKey: requireEnv('SECRET_ACCESS_KEY')
+  }
+}
 
-const cloudFormationClient = new CloudFormationClient()
+const cloudFormationClient = new CloudFormationClient(clientConfig)
 
 export async function getAllStackResources(
   stackName: string

@@ -9,18 +9,18 @@ import {
   ListVersionsByFunctionCommand
 } from '@aws-sdk/client-lambda'
 
-// const clientConfig = {
-//   region: requireEnv('REGION'),
-//   credentials: {
-//     accessKeyId: requireEnv('ACCESS_KEY_ID'),
-//     secretAccessKey: requireEnv('SECRET_ACCESS_KEY'),
-//   }
-// }
+const clientConfig = {
+  region: requireEnv('REGION'),
+  credentials: {
+    accessKeyId: requireEnv('ACCESS_KEY_ID'),
+    secretAccessKey: requireEnv('SECRET_ACCESS_KEY'),
+  }
+}
 
 /**
  * @link Request Limit https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#api-requests
  */
-const lambdaClient = new LambdaClient()
+const lambdaClient = new LambdaClient(clientConfig)
 
 async function getLambdaVersions(functionName: string): Promise<string[]> {
   let firstCalled = false

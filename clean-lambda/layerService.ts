@@ -9,15 +9,15 @@ import { StackResourceSummary } from '@aws-sdk/client-cloudformation'
 import { ResourceType } from './constants'
 import { chunk, getLayerInfoByArn, isValidResourceStatus, onlyUnique, requireEnv } from './utils'
 
-// const clientConfig = {
-//   region: requireEnv('REGION'),
-//   credentials: {
-//     accessKeyId: requireEnv('ACCESS_KEY_ID'),
-//     secretAccessKey: requireEnv('SECRET_ACCESS_KEY')
-//   }
-// }
+const clientConfig = {
+  region: requireEnv('REGION'),
+  credentials: {
+    accessKeyId: requireEnv('ACCESS_KEY_ID'),
+    secretAccessKey: requireEnv('SECRET_ACCESS_KEY')
+  }
+}
 
-const lambdaClient = new LambdaClient()
+const lambdaClient = new LambdaClient(clientConfig)
 
 async function getLayerVersions(layerName: string): Promise<number[]> {
   let firstCalled = false
