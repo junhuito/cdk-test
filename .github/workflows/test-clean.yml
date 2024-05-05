@@ -1,4 +1,4 @@
-name: Test clean lambda
+name: Test clean lambda v2
 on:
     workflow_dispatch:
         inputs:

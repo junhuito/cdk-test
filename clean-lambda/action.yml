@@ -34,5 +34,12 @@ runs:
       shell: bash
 
     - name: Run clean lambda
+      env:
+        RETAIN_LAYER_VERSION: ${{ inputs.RETAIN_LAYER_VERSION }}
+        STACK_NAME: "${{ inputs.STACK_NAME }}"
+        ACCESS_KEY_ID: ${{ inputs.ACCESS_KEY_ID }}
+        SECRET_ACCESS_KEY: ${{ inputs.SECRET_ACCESS_KEY }}
+        # AWS_SESSION_TOKEN: ${{ inputs.AWS_SESSION_TOKEN }}
+        REGION: ${{ inputs.REGION }}
       run: npx ts-node ./clean-lambda
       shell: bash
