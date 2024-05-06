@@ -4,5 +4,11 @@
     "@aws-sdk/client-cloudformation": "^3.556.0",
     "@aws-sdk/client-lambda": "^3.556.0",
     "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "build": "npx ncc build ./index.ts -o dist --source-map --license licenses.txt"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.1"
   }
 }
