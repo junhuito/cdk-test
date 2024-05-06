@@ -27,20 +27,23 @@ inputs:
     required: true
 
 runs:
-  using: composite
-  steps:
-    - name: Package Installation
-      run: yarn install --cwd ./clean-lambda
-      shell: bash
+  using: node16
+  main: ./dist/index.js
+# runs:
+#   using: composite
+#   steps:
+#     - name: Package Installation
+#       run: yarn install --cwd ./clean-lambda
+#       shell: bash
 
-    - name: Run clean lambda
-      env:
-        RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
-        RETAIN_LAYER_VERSION: ${{ inputs.RETAIN_LAYER_VERSION }}
-        STACK_NAME: "${{ inputs.STACK_NAME }}"
-        ACCESS_KEY_ID: ${{ inputs.ACCESS_KEY_ID }}
-        SECRET_ACCESS_KEY: ${{ inputs.SECRET_ACCESS_KEY }}
-        # AWS_SESSION_TOKEN: ${{ inputs.AWS_SESSION_TOKEN }}
-        REGION: ${{ inputs.REGION }}
-      run: npx node ./dist
-      shell: bash
+#     - name: Run clean lambda
+#       env:
+#         RETAIN_FUNCTION_VERSION: ${{ inputs.RETAIN_FUNCTION_VERSION }}
+#         RETAIN_LAYER_VERSION: ${{ inputs.RETAIN_LAYER_VERSION }}
+#         STACK_NAME: "${{ inputs.STACK_NAME }}"
+#         ACCESS_KEY_ID: ${{ inputs.ACCESS_KEY_ID }}
+#         SECRET_ACCESS_KEY: ${{ inputs.SECRET_ACCESS_KEY }}
+#         # AWS_SESSION_TOKEN: ${{ inputs.AWS_SESSION_TOKEN }}
+#         REGION: ${{ inputs.REGION }}
+#       run: npx node ./dist
+#       shell: bash
