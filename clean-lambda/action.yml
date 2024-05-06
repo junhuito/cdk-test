@@ -42,5 +42,5 @@ runs:
         SECRET_ACCESS_KEY: ${{ inputs.SECRET_ACCESS_KEY }}
         # AWS_SESSION_TOKEN: ${{ inputs.AWS_SESSION_TOKEN }}
         REGION: ${{ inputs.REGION }}
-      run: npx ts-node ./clean-lambda
+      run: npx node ./dist
       shell: bash

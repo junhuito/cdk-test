@@ -6,7 +6,7 @@ import { serverlessConfiguration } from './serverless';
 import * as packages from './resources/layer/nodejs/package.json';
 
 import type { AWS } from '@serverless/typescript';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { CfnQueue, Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 import { GlobalStack } from './global-resources/iam-stack';
 import { Role } from 'aws-cdk-lib/aws-iam';
 import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
@@ -21,6 +21,8 @@ import { SecretsManagerStack } from './secret-manager-stack';
 import { EventBus, Rule, RuleTargetInput, Schedule } from 'aws-cdk-lib/aws-events';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { BaseLayer, getLayer } from './baseLayer';
+import { Alias, Key } from 'aws-cdk-lib/aws-kms';
+import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 
 interface SQSResource {
   [k: string]: {
@@ -132,6 +134,50 @@ export class MainStack extends Stack {
     //   code: Code.fromAsset('./node_modules'),
     // })
 
+    const kk = new Key(this, 'www', {
+      alias: 'alias/www',
+    })
+
+    // const j = Object.assign(kk, {
+    //   keyId: kk.keyId,
+    // });
+
+    
+
+    // const aa = Alias.fromAliasName(this, 'opsss', 'alias/www');
+
+    // const specialK = new Proxy(kk, {
+    //   get(target, prop) {
+    //     if (prop === 'keyArn') {
+    //       console.log('being called once?');
+    //       return aa.aliasName;
+    //     }
+
+    //     if (prop in target) {
+    //       return (target as any)[prop];
+    //     }
+    //   }
+    // })
+    // const queue = new Queue(this, 'MyQueue', {
+    //   queueName: 'MyTestSqsQueue',
+    //   encryptionMasterKey: specialK,
+    //   // enforceSSL: true,
+    //   encryption: QueueEncryption.KMS,
+    //   dataKeyReuse: Duration.days(1),
+    // });
+
+    
+
+    // const qqq = new CfnQueue(this, 'MyQueue2', {
+    //   queueName: 'MyTestSqsQueue2',
+    //   kmsMasterKeyId: aa.aliasName,
+      
+    //   kmsDataKeyReusePeriodSeconds: 60,
+    // });
+
+    // const eventBus = new EventBus(this, 'MyEventBus', {
+    // })
+
     new BaseLayer(this, 'my-testing-lambda-layer', {
       code: Code.fromAsset('./lib/resources/layer'),
       layerVersionName: 'my-testing-lambda-layer-name',
@@ -174,9 +220,16 @@ export class MainStack extends Stack {
       layers: [layer],
     });
 
+    const ra = RestApi.fromRestApiId(this, 'restApiId', 'edlzsxuxb1');
+
+    const li = new LambdaIntegration(this.fn);
+
+    const resource = ra.root.getResource('/document/v1.0/files/upload');
+    resource?.addMethod('POST', li);
+
     const rr = new Rule(this, 'myRule', {
       ruleName: 'trigger-warm-up',
-      schedule: Schedule.rate(Duration.minutes(1)),
+      schedule: Schedule.rate(Duration.days(10)),
       targets: [new LambdaFunction(this.fn, {
         event: RuleTargetInput.fromObject({
           source: 'walwallalalala',
