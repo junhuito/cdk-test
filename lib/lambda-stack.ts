@@ -204,6 +204,13 @@ export class MainStack extends Stack {
       removalPolicy: RemovalPolicy.RETAIN,
     })
 
+    const layer2 = new BaseLayer(this, 'my-testing-lambda-layer-2', {
+      code: Code.fromAsset('./lib/resources/layer'),
+      layerVersionName: 'my-testing-lambda-layer-name-2',
+      compatibleRuntimes: [Runtime.NODEJS_16_X],
+      removalPolicy: RemovalPolicy.RETAIN,
+    })
+
     const layer = getLayer('my-testing-lambda-layer');
     const requiredRole = Role.fromRoleArn(this, 'roleArn', 'arn:aws:iam::361081796204:role/MyLambdaRole');
 
@@ -221,7 +228,7 @@ export class MainStack extends Stack {
       currentVersionOptions: {
         removalPolicy: RemovalPolicy.RETAIN,
       },
-      layers: [layer],
+      layers: [layer,layer2],
     });
 
     Array.from({ length: 50 }).forEach((_, i) => {
@@ -239,7 +246,7 @@ export class MainStack extends Stack {
         currentVersionOptions: {
           removalPolicy: RemovalPolicy.RETAIN,
         },
-        layers: [layer],
+        layers: [layer, layer2],
       });
     })
 
