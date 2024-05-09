@@ -1,14 +1,13 @@
 // import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 // import { get } from 'lodash';
 // import axios from 'axios';
-// import { mySpecialFunctionOutsideModule } from '../../moduleOutside/resource/moduleOutside';
 
-// function first() {
-//     console.log("first(): factory evaluated");
-//     return function (target: any, propertyKey: string) {
-//       console.log("first(): called");
-//     };
-//   }
+function first() {
+    console.log("first(): factory evaluated");
+    return function (target: any, propertyKey: string) {
+      console.log("first(): called");
+    };
+  }
 
 // export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
 export const abc = async (event: any, context: any): Promise<any> => {
@@ -20,14 +19,12 @@ export const abc = async (event: any, context: any): Promise<any> => {
     //     return response.data;
     // });
 
-    // class Test {
-    //     @first()
-    //     hello_world: string;
-    // }
+    class Test {
+        @first()
+        hello_world: string;
+    }
     console.log('another version again');
     console.log('woww, prune version');
-
-    // mySpecialFunctionOutsideModule();
 
     // console.log('awsplaywright...', awsplaywright);
 

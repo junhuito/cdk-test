@@ -21,8 +21,27 @@ import { SecretsManagerStack } from './secret-manager-stack';
 import { EventBus, Rule, RuleTargetInput, Schedule } from 'aws-cdk-lib/aws-events';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { BaseLayer, getLayer } from './baseLayer';
+import { Function } from 'aws-cdk-lib/aws-lambda'
 import { Alias, Key } from 'aws-cdk-lib/aws-kms';
-import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { LambdaIntegration, LambdaRestApi, Resource, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { SecurityGroup, Subnet, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { StringListParameter, StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { IBuildProvider, ProviderBuildOptions, TypeScriptCode } from "@mrgrain/cdk-esbuild";
+import { spawnSync } from 'child_process';
+
+class BuildScriptProvider implements IBuildProvider {
+  constructor(public readonly scriptPath: string) { }
+
+  buildSync(options: ProviderBuildOptions): void {
+    const result = spawnSync('node', [this.scriptPath, JSON.stringify(options)], {
+      stdio: ['inherit', 'inherit', 'pipe'],
+    });
+
+    if (result.stderr.byteLength > 0) {
+      throw result.stderr.toString();
+    }
+  }
+}
 
 interface SQSResource {
   [k: string]: {
@@ -109,10 +128,10 @@ export class MainStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    let iam;
-    if (this.region === 'ap-southeast-1') {
-      iam = new GlobalStack(this, 'iam');
-    }
+    // let iam;
+    // if (this.region === 'ap-southeast-1') {
+    //   iam = new GlobalStack(this, 'iam');
+    // }
 
     // const SQSResourceType = 'AWS::SQS::Queue';
 
@@ -134,9 +153,9 @@ export class MainStack extends Stack {
     //   code: Code.fromAsset('./node_modules'),
     // })
 
-    const kk = new Key(this, 'www', {
-      alias: 'alias/www',
-    })
+    // const kk = new Key(this, 'www', {
+    //   alias: 'alias/www',
+    // })
 
     // const j = Object.assign(kk, {
     //   keyId: kk.keyId,
@@ -188,54 +207,60 @@ export class MainStack extends Stack {
     const layer = getLayer('my-testing-lambda-layer');
     const requiredRole = Role.fromRoleArn(this, 'roleArn', 'arn:aws:iam::361081796204:role/MyLambdaRole');
 
-    this.fn = new NodejsFunction(this, 'test-testVersionedLambda', {
-      bundling: {
-        externalModules: Object.keys(packages.dependencies),
-        minify: true,
-        bundleAwsSDK: false,
-        commandHooks: {
-          beforeBundling: (inputDir: string, outputDir: string) => {
-            console.log('inputDir...', inputDir);
-            console.log('outputDir...', outputDir);
-
-            return [];
-            // return [
-            //   `cp ${inputDir}/lambda/hello/myExtra.file ${outputDir}`, // copy file action
-            //   `cp -r ${inputDir}/lambda/hello/myExtraFolder ${outputDir}` // copy folder action
-            // ];
-          },
-          afterBundling: (inputDir: string, outputDir: string) => [],
-          beforeInstall: (inputDir: string, outputDir: string) => [],
-        }
-      },      
+    this.fn = new Function(this, 'test-testVersionedLambda', {
       role: requiredRole,
       handler: 'abc',
-      depsLockFilePath: './yarn.lock',
       runtime: Runtime.NODEJS_16_X,
-      functionName: 'test-testVersionedLambda',
-      entry: 'lambda/hello/index.ts',
+      functionName: 'test-testVersionedLambda-3' + Stack.of(this).region,
+      code: new TypeScriptCode(
+        'lambda/hello/index.ts',
+        {
+          buildProvider: new BuildScriptProvider('lib/build.mjs')
+        }
+      ),
       currentVersionOptions: {
         removalPolicy: RemovalPolicy.RETAIN,
       },
       layers: [layer],
     });
 
-    const ra = RestApi.fromRestApiId(this, 'restApiId', 'edlzsxuxb1');
+    Array.from({ length: 50 }).forEach((_, i) => {
+      new Function(this, 'test-testVersionedLambda-comment-test-' + i, {
+        role: requiredRole,
+        handler: 'abc',
+        runtime: Runtime.NODEJS_16_X,
+        functionName: 'test-testVersionedLambda-comment-test-' + i,
+        code: new TypeScriptCode(
+          'lambda/hello/index.ts',
+          {
+            buildProvider: new BuildScriptProvider('lib/build.mjs')
+          }
+        ),
+        currentVersionOptions: {
+          removalPolicy: RemovalPolicy.RETAIN,
+        },
+        layers: [layer],
+      });
+    })
 
-    const li = new LambdaIntegration(this.fn);
+    // const api = RestApi.fromRestApiAttributes(this, 'test-testVersionedLambda-rest-api-2', {
+    //  restApiId: 'edlzsxuxb1',
+    //  rootResourceId: 'fz0sjphvt6',
+    // });
 
-    const resource = ra.root.getResource('/document/v1.0/files/upload');
-    resource?.addMethod('POST', li);
+    // api.root.resourceForPath('/document/v1.0/files/uploat/')
+    //   .addMethod('POST', new LambdaIntegration(this.fn));
 
-    const rr = new Rule(this, 'myRule', {
-      ruleName: 'trigger-warm-up',
-      schedule: Schedule.rate(Duration.days(10)),
-      targets: [new LambdaFunction(this.fn, {
-        event: RuleTargetInput.fromObject({
-          source: 'walwallalalala',
-        })
-      })],
-    });
+
+    // const rr = new Rule(this, 'myRule', {
+    //   ruleName: 'trigger-warm-up',
+    //   schedule: Schedule.rate(Duration.days(10)),
+    //   targets: [new LambdaFunction(this.fn, {
+    //     event: RuleTargetInput.fromObject({
+    //       source: 'walwallalalala',
+    //     })
+    //   })],
+    // });
 
     // const r = new Rule(this, 'test-testVersionedLambda-rule', {
     //   schedule: Schedule.expression('cron(0 * * * ? *)'),
@@ -275,23 +300,11 @@ export class MainStack extends Stack {
     //   }
     // )
 
-    // this.fn.invalidateVersionBasedOn(Date.now().toString());
-
-    // new Version(this, 'test-testVersionedLambda-version', {
-    //   lambda: this.fn,
-    //   removalPolicy: RemovalPolicy.RETAIN,
-    // })
-
     this.fn.currentVersion;
 
-    if (iam) {
-      this.fn.node.addDependency(iam);
-    }
-
-    // new CfnVersion(this, 'test-testVersionedLambda-version', {
-    //   functionName: this.fn.functionName,
-    //   description: 'description',
-    // })
+    // if (iam) {
+    //   this.fn.node.addDependency(iam);
+    // }
 
     // const api = new RestApi(this, 'talent-aquisition', {
     //   restApiName: 'Talent Aquisition',
