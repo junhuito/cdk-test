@@ -6,7 +6,8 @@
       "es2020",
       "dom"
     ],
-    "outDir": "dist",
+    "rootDir": "./",
+    "baseUrl": "./",
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -20,14 +21,21 @@
     "noFallthroughCasesInSwitch": false,
     "inlineSourceMap": true,
     "inlineSources": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
+    "skipLibCheck": true,
     "typeRoots": [
-      "./node_modules/@types"
+      "./node_modules/@types",
     ]
   },
+  "ts-node": {
+    "files": true
+},
   "exclude": [
     "node_modules",
-    "cdk.out"
+    "cdk.out",
+    "clean-lambda"
   ]
 }

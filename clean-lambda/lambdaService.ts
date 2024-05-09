@@ -10,10 +10,10 @@ import {
 } from '@aws-sdk/client-lambda'
 
 const clientConfig = {
-  region: requireEnv('REGION'),
+  region: core.getInput('REGION'),
   credentials: {
-    accessKeyId: requireEnv('ACCESS_KEY_ID'),
-    secretAccessKey: requireEnv('SECRET_ACCESS_KEY'),
+    accessKeyId: core.getInput('ACCESS_KEY_ID'),
+    secretAccessKey: core.getInput('SECRET_ACCESS_KEY'),
   }
 }
 

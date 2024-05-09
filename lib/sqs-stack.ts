@@ -21,9 +21,9 @@ export class MySqsStack extends Stack {
 
     const snsTopic = Topic.fromTopicArn(this, 'topic', 'arn:aws:kms:ap-southeast-1:361081796204:key/f1228d9c-9010-4d7b-abbf-d0946fa5da33')
 
-    const kk = new Key(this, 'www', {
+    // const kk = new Key(this, 'www', {
       
-    })
+    // })
     // new CfnQueue(this, 'wqewq', {
     //   kmsMasterKeyId
     // })
@@ -31,7 +31,7 @@ export class MySqsStack extends Stack {
     const queue = new Queue(this, 'MyQueue', {
       queueName: 'MyTestSqsQueue',
       // encryption: QueueEncryption.KMS_MANAGED, // optional encryption
-      encryptionMasterKey: kk,
+      // encryptionMasterKey: kk,
       
       dataKeyReuse: Duration.days(1),
       deadLetterQueue: {
